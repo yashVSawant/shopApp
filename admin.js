@@ -1,16 +1,31 @@
-const path = require('path');
+const Product = require('../models/product');
 
-const express = require('express');
+exports.getAddProduct = (req, res, next) => {
+  res.render('admin/add-product', {
+    pageTitle: 'Add Product',
+    path: '/admin/add-product',
+    formsCSS: true,
+    productCSS: true,
+    activeAddProduct: true
+  });
+};
 
-const productsController = require('../controller/product');
+exports.postAddProduct = (req, res, next) => {
+  const title = req.body.title;
+  const imageUrl = req.body.imageUrl;
+  const price = req.body.price;
+  const description = req.body.description;
+  const product = new Product(title, imageUrl, description, price);
+  product.save();
+  res.redirect('/');
+};
 
-const router = express.Router();
-
-// /admin/add-product => GET
-router.get('/add-product',productsController.getAddProduct);
-
-// /admin/add-product => POST
-router.post('/add-product',productsController.postAddProducts);
-
-module.exports = router;
-
+exports.getProducts = (req, res, next) => {
+  Product.fetchAll(products => {
+    res.render('admin/products', {
+      prods: products,
+      pageTitle: 'Admin Products',
+      path: '/admin/products'
+    });
+  });
+};
